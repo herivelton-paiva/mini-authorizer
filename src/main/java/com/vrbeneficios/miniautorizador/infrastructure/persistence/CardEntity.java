@@ -12,7 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -51,10 +50,8 @@ public class CardEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "card_type", length = 10)
-    private CardType type;
-
-    @Version
-    private Long version;
+    @Builder.Default
+    private CardType type = CardType.VR;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -82,7 +79,6 @@ public class CardEntity {
                 .password(this.password)
                 .balance(this.balance)
                 .type(this.type)
-                .version(this.version)
                 .createdAt(this.createdAt)
                 .updatedAt(this.updatedAt)
                 .build();
@@ -98,13 +94,8 @@ public class CardEntity {
                 .password(card.getPassword())
                 .balance(card.getBalance())
                 .type(card.getType())
-                .version(card.getVersion())
                 .createdAt(card.getCreatedAt())
                 .updatedAt(card.getUpdatedAt())
                 .build();
-    }
-
-    public static CardEntity toEntity(Card card) {
-        return fromDomain(card);
     }
 }

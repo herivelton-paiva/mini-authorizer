@@ -1,6 +1,7 @@
 package com.vrbeneficios.miniautorizador.application.usecase;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -16,11 +17,10 @@ public class GetCardBalanceUseCase {
     private final CardRepository cardRepository;
 
     public BigDecimal execute(String cardNumber) {
-        Card card = cardRepository.findByCardNumber(cardNumber);
-        if (card == null) {
-            return null;
-        }
-        return card.getBalance();
+        var card = cardRepository.findByCardNumber(cardNumber);
+        return Optional.ofNullable(card)
+                .map(Card::getBalance)
+                .orElse(null);
     }
 
 }

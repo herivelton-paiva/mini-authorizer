@@ -3,6 +3,8 @@ package com.vrbeneficios.miniautorizador.infrastructure.persistence;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.vrbeneficios.miniautorizador.application.repository.CardRepository;
@@ -13,9 +15,19 @@ public interface CardRepositoryImpl extends JpaRepository<CardEntity, Long>, Car
 
     Optional<CardEntity> findFirstByCardNumber(String cardNumber);
 
+    @Query(value = "SELECT * FROM cards WHERE card_number = :cardNumber FOR UPDATE", nativeQuery = true)
+    Optional<CardEntity> findFirstByCardNumberWithLock(@Param("cardNumber") String cardNumber);
+
     @Override
     default Card findByCardNumber(String cardNumber) {
         return findFirstByCardNumber(cardNumber)
+                .map(CardEntity::toDomain)
+                .orElse(null);
+    }
+
+    @Override
+    default Card findByCardNumberWithLock(String cardNumber) {
+        return findFirstByCardNumberWithLock(cardNumber)
                 .map(CardEntity::toDomain)
                 .orElse(null);
     }
